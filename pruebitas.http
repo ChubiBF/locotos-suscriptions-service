@@ -1,0 +1,40 @@
+### PRUEBA DE SUSCRIPCION DEL USUARIO 3
+POST http://localhost:3001/api/suscriptions/suscribir
+Content-Type: application/json
+
+{
+  "id_usuario": 3,
+  "id_plan": 1,
+  "id_metodo_pago": 1
+}
+
+### 1. El usuario registra su tarjeta (Simulado)
+POST http://localhost:3001/api/suscriptions/metodos-pago
+Content-Type: application/json
+
+{
+  "id_usuario": 3,
+  "tipo_metodo": "Tarjeta de Crédito",
+  "proveedor": "Visa"
+}
+
+### RESPUESTA ESPERADA: API devolvera un id_metodo: n eso mandar a la siguiente direccion
+
+### 2. El usuario compra la suscripción usando ese método válido
+POST http://localhost:3001/api/suscriptions/suscribir
+Content-Type: application/json
+
+{
+  "id_usuario": 3,
+  "id_plan": 3,
+  "id_metodo_pago": 14
+}
+
+
+
+##PARA PROBAR LAS CONSULTAS DE HISTORIAL DE PAGOS
+### PASO 3: Obtener el Historial de Facturación 
+GET http://localhost:3001/api/suscriptions/historial/3
+
+###
+GET http://localhost:3001/api/suscriptions/status/1
