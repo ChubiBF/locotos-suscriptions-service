@@ -38,4 +38,11 @@ export class MySQLSuscripcionRepository implements ISuscripcionRepository {
       [nuevoEstado, id]
     )
   }
+
+  async updateRenovacion (id: number, renovacion: boolean): Promise<void> {
+    await this.db.execute(
+      'UPDATE Suscripcion_Usuario SET renovacion_automatica = ? WHERE id_suscripcion = ?',
+      [renovacion ? 1 : 0, id]
+    )
+  }
 }

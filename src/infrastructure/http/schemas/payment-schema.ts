@@ -16,3 +16,7 @@ export const createMetodoPagoSchema = z.object({
   tipo_metodo: z.string({ error: requiredOrFilled }).min(2),
   proveedor: z.string().optional()
 })
+
+export const userActionSchema = z.object({
+  id_usuario: z.number({ error: requiredOrFilled }).int().positive()
+})

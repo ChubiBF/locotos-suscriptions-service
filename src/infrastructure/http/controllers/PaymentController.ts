@@ -4,6 +4,9 @@ import type { GetAvailablePlans } from '../../../application/use-cases/get-avail
 import { RegisterPaymentMethod } from '../../../application/use-cases/register-payment-method.js'
 import { GetBillingHistory } from '../../../application/use-cases/get-billing-history.js'
 import { GetActiveSubscription } from '../../../application/use-cases/get-active-suscription.js'
+import { CancelSubscription } from '../../../application/use-cases/cancel-suscription.js'
+import { ToggleAutoRenewal } from '../../../application/use-cases/toggle-auto-renewal.js'
+import { GetPaymentMethods } from '../../../application/use-cases/get-payment-methods.js'
 
 export class PaymentController {
   constructor (
@@ -11,8 +14,22 @@ export class PaymentController {
     private readonly getAvailablePlans: GetAvailablePlans,
     private readonly registerPaymentMethod: RegisterPaymentMethod,
     private readonly getBillingHistory: GetBillingHistory,
-    private readonly getActiveSubscription: GetActiveSubscription
+    private readonly getActiveSubscription: GetActiveSubscription,
+    private readonly cancelSubscription: CancelSubscription,
+    private readonly toggleAutoRenewal: ToggleAutoRenewal,
+    private readonly getPaymentMethods: GetPaymentMethods
   ) {}
+
+  async getStatus (req: Request, res: Response): Promise<void> {
+    try {
+      const idUsuario = Number(req.params.id_usuario)
+      const estadoSuscripcion = await this.getActiveSubscription.execute(idUsuario)
+
+      res.status(200).json(estadoSuscripcion)
+    } catch (error: any) {
+      res.status(400).json({ error: error.message })
+    }
+  }
 
   async getPlanes (_req: Request, res: Response): Promise<void> {
     try {
@@ -26,12 +43,12 @@ export class PaymentController {
     }
   }
 
-  async getStatus (req: Request, res: Response): Promise<void> {
+  async getMethods (req: Request, res: Response): Promise<void> {
     try {
       const idUsuario = Number(req.params.id_usuario)
-      const estadoSuscripcion = await this.getActiveSubscription.execute(idUsuario)
+      const metodos = await this.getPaymentMethods.execute(idUsuario)
 
-      res.status(200).json(estadoSuscripcion)
+      res.status(200).json(metodos)
     } catch (error: any) {
       res.status(400).json({ error: error.message })
     }
@@ -61,6 +78,31 @@ export class PaymentController {
         ? error.message
         : 'Error al procesar la suscripción'
       res.status(400).json({ error: message })
+    }
+  }
+
+  async cancel (req: Request, res: Response): Promise<void> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { id_usuario } = req.body
+      await this.cancelSubscription.execute(Number(id_usuario))
+      res.status(200).json({ message: 'Suscripción cancelada inmediatamente de forma exitosa' })
+    } catch (error: any) {
+      res.status(400).json({ error: error.message })
+    }
+  }
+
+  async toggleRenewal (req: Request, res: Response): Promise<void> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { id_usuario } = req.body
+      const estadoFinal = await this.toggleAutoRenewal.execute(Number(id_usuario))
+      res.status(200).json({
+        message: 'Preferencia de renovación automática actualizada',
+        renovacion_automatica: estadoFinal
+      })
+    } catch (error: any) {
+      res.status(400).json({ error: error.message })
     }
   }
 

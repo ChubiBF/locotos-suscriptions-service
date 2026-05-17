@@ -14,6 +14,12 @@ import { RegisterPaymentMethod } from '../application/use-cases/register-payment
 import { GetBillingHistory } from '../application/use-cases/get-billing-history.js'
 import { GetActiveSubscription } from '../application/use-cases/get-active-suscription.js'
 
+import { CancelSubscription } from '../application/use-cases/cancel-suscription.js'
+import { ToggleAutoRenewal } from '../application/use-cases/toggle-auto-renewal.js'
+
+import { GetPaymentMethods } from '../application/use-cases/get-payment-methods.js'
+
+// repositories
 const planRepository = new MySQLPlanRepository(pool)
 const pagoRepository = new MySQLPagoRepository(pool)
 const suscripcionRepository = new MySQLSuscripcionRepository(pool)
@@ -31,10 +37,19 @@ const getBillingHistory = new GetBillingHistory(pagoRepository)
 
 const getActiveSubscription = new GetActiveSubscription(suscripcionRepository, planRepository)
 
+const cancelSubscription = new CancelSubscription(suscripcionRepository)
+const toggleAutoRenewal = new ToggleAutoRenewal(suscripcionRepository)
+
+const getPaymentMethods = new GetPaymentMethods(metodoPagoRepository)
+
+// CONTROLLER
 export const paymentController = new PaymentController(
   subscribeUser,
   getAvailablePlans,
   registerPaymentMethod,
   getBillingHistory,
-  getActiveSubscription
+  getActiveSubscription,
+  cancelSubscription,
+  toggleAutoRenewal,
+  getPaymentMethods
 )
