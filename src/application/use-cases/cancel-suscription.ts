@@ -9,6 +9,22 @@ export class CancelSubscription {
       throw new Error('No se encontró una suscripción activa para este usuario')
     }
 
+    const NOTIFICATION_API_URL = process.env.NOTIFICATION_API_URL ?? 'http://localhost:3003/notifications'
+
+    try {
+      await fetch(NOTIFICATION_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_usuario: idUsuario,
+          mensaje: 'se cancelo la suscripcion completamente',
+          tipo: 'pago'
+        })
+      })
+    } catch (e) {
+      console.log('error: ', e)
+    }
+
     await this.suscripcionRepository.updateEstado(suscripcion.id_suscripcion, 'cancelado')
   }
 }

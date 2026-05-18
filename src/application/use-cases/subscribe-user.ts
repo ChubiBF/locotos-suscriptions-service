@@ -43,6 +43,22 @@ export class SubscribeUser {
       codigo_transaccion_externo: transactionId
     })
 
+    const NOTIFICATION_API_URL = process.env.NOTIFICATION_API_URL ?? 'http://localhost:3003/notifications'
+
+    try {
+      await fetch(NOTIFICATION_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_usuario: data.id_usuario,
+          mensaje: `suscripción activada con exito!, disfruta el plan de ${plan.nombre_plan}!, se pago ${plan.precio} 'BOB'`,
+          tipo: 'pago'
+        })
+      })
+    } catch (e) {
+      console.log('error: ', e)
+    }
+
     return nuevaSuscripcion
   }
 }
